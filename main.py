@@ -1,13 +1,12 @@
 BACKGROUND_COLOR = "#B1DDC6"
-TEXT='Trouve'
 current_card=''
 words_dict = {}
 import warnings
 warnings.filterwarnings('ignore', '\nPyarrow', DeprecationWarning)
 from tkinter import *
-from tkinter import messagebox
 import pandas as pd
 import random
+
 #read data
 try:
     words_data = pd.read_csv('data/words_to_learn.csv')
@@ -18,8 +17,6 @@ else:
     words_dict = words_data.to_dict(orient='records')
 finally:
     print(f'You still have {len(words_dict)-1} to learn')
-
-
 
 
 
@@ -36,6 +33,7 @@ def changingCards():
     flip_timer = window.after(3000, flip_card)
 
 
+#functin to flip card and show translation
 def flip_card():
     global current_card
     en_word = current_card['English']
@@ -43,6 +41,7 @@ def flip_card():
     canvas.itemconfig(title, fill='white', text='English')
     canvas.itemconfig(word, fill='white', text=en_word)
 
+#function to remove letter from original data and store it in new file
 def is_known():
     words_dict.remove(current_card)
     print(len(words_dict))
@@ -64,7 +63,7 @@ card_front = PhotoImage(file='images/card_front.png')
 card_back = PhotoImage(file='images/card_back.png')
 card_can = canvas.create_image(410, 261, image=card_front)
 title = canvas.create_text(400, 150, text='Title', font=('Arial', 40, 'italic'))
-word = canvas.create_text(400, 263, text=TEXT, font=('Arial', 60, 'bold'))
+word = canvas.create_text(400, 263, text='Word', font=('Arial', 60, 'bold'))
 
 canvas.grid(column=0, row=0, columnspan=2)
 
