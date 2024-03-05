@@ -1,5 +1,7 @@
 BACKGROUND_COLOR = "#B1DDC6"
 TEXT='Trouve'
+current_card=''
+words_dict = {}
 import warnings
 warnings.filterwarnings('ignore', '\nPyarrow', DeprecationWarning)
 from tkinter import *
@@ -7,12 +9,20 @@ from tkinter import messagebox
 import pandas as pd
 import random
 #read data
-words_data = pd.read_csv('data/french_words.csv')
-words_dict = words_data.to_dict(orient='records')
-pd.DataFrame.to_csv(words_data, 'word_to_learn.csv')
-print(words_dict)
+try:
+    words_data = pd.read_csv('data/words_to_learn.csv')
+except FileNotFoundError:
+    original_data = pd.read_csv('data/french_words.csv')
+    words_dict = original_data.to_dict(orient='records')
+else:
+    words_dict = words_data.to_dict(orient='records')
+finally:
+    print(f'You still have {len(words_dict)-1} to learn')
 
-current_card=''
+
+
+
+
 # function to change words
 def changingCards():
     global current_card, flip_timer
@@ -32,6 +42,13 @@ def flip_card():
     canvas.itemconfig(card_can, image=card_back)
     canvas.itemconfig(title, fill='white', text='English')
     canvas.itemconfig(word, fill='white', text=en_word)
+
+def is_known():
+    words_dict.remove(current_card)
+    print(len(words_dict))
+    data = pd.DataFrame(words_dict)
+    data.to_csv('data/words_to_learn.csv', index=False)
+    changingCards()
 
 
 
@@ -55,7 +72,7 @@ canvas.grid(column=0, row=0, columnspan=2)
 
 img_right = PhotoImage(file='images/right.png')
 img_wrong = PhotoImage(file='images/wrong.png')
-btn_right = Button(image=img_right, highlightthickness=0, command=changingCards)
+btn_right = Button(image=img_right, highlightthickness=0, command=is_known)
 btn_wrong = Button(image=img_wrong, highlightthickness=0, command=changingCards)
 
 btn_right.grid(column=1, row=1)
